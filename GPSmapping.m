@@ -5,7 +5,7 @@
 %
 %   Maps each coordinate in dataset to a gps location
 
-function GPS = GPSmapping(dataname)
+function GPS = GPSmapping(indoorpositions, cali_P1, cali_P2)
     close all;
     
     %Earth radius from wiki
@@ -14,12 +14,16 @@ function GPS = GPSmapping(dataname)
     latLen = 111320; %in meters
     
     %read gps callibration point 1 
-    latRx1 = 55.782080;
-    lonRx1 = 12.518670;
+    %latRx1 = 55.782080;
+    %lonRx1 = 12.518670;
+		latRx1 = cali_P1(1);
+		lonRx1 = cali_P1(2);
     %read gps callibration point 2 (for angle)
-    latRx2 = 55.782061;
-    lonRx2 = 12.518785;
-
+    %latRx2 = 55.782061;
+    %lonRx2 = 12.518785;
+		latRx2 = cali_P2(1);
+		lonRx2 = cali_P2(2);
+			
     %Rx equipment start position (0,0) best estimate
     %databar 343 (room 009) south east corner
     %lat 55.782153, lon 12.518290
@@ -47,8 +51,8 @@ function GPS = GPSmapping(dataname)
 
     %Assume latRx and lonRx corresponds to (0,0) in dataset
 
-    load(dataname,'data','metaData','timeStamp');
-    data = data/100;
+    %load(dataname,'data','metaData','timeStamp');
+    data = indoorpositions/100; % Convert to m
     
     
     %Flip some axis. Flipping depends on orientation. For north west flip
@@ -66,36 +70,36 @@ function GPS = GPSmapping(dataname)
     GPS(2,:) = lonRx + 180/pi * (G(1,:)/eRadius) /cos(pi/180 * latRx);
     
     %Plot for sanity check
-    figure('name', '2D data');
-    plot(data(1,:),data(2,:));
+    %figure('name', '2D data');
+    %plot(data(1,:),data(2,:));
     
-    figure('name', 'GPS coordinates');
-    plot(GPS(2,:), GPS(1,:));
+    %figure('name', 'GPS coordinates');
+    %plot(GPS(2,:), GPS(1,:));
     
     %Save as .csv file
-    DataTemp = rot90(GPS,3);
-    Data=DataTemp;
-    Data(:,1) = DataTemp(:,2);
-    Data(:,2) = DataTemp(:,1);
+    %DataTemp = rot90(GPS,3);
+    %Data=DataTemp;
+    %Data(:,1) = DataTemp(:,2);
+    %Data(:,2) = DataTemp(:,1);
     
     %Create a folder
-    foldername = 'CSV_KML_data';
-    if ~exist(foldername,'dir')
-        mkdir(foldername);
-    end
+    %foldername = 'CSV_KML_data';
+    %if ~exist(foldername,'dir')
+    %    mkdir(foldername);
+    %end
     
-    dlmwrite([foldername '/' dataname(1:end-4) '.csv'], Data,  'precision', 18);
+    %dlmwrite([foldername '/' dataname(1:end-4) '.csv'], Data,  'precision', 18);
     
     %Save as .kml file for import in Google Earth or similar
-    simple_kml_writer([foldername '/' dataname(1:end-4)],Data);
+    %simple_kml_writer([foldername '/' dataname(1:end-4)],Data);
     
     
     %load power measurements
-    P = postprocess(dataname,[dataname(1:end-4) '.txt']);
+    %P = postprocess(dataname,[dataname(1:end-4) '.txt']);
     %plot power
-    figure('name', 'Recieved power');
-    scatter(data(1,:),data(2,:),[],P,'filled');
-    colorbar;
+    %figure('name', 'Recieved power');
+    %scatter(data(1,:),data(2,:),[],P,'filled');
+    %colorbar;
     
     
 end

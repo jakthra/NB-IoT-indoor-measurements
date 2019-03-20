@@ -1,10 +1,5 @@
 %Postprocessing of data for deep indoor measurements
-function P = postprocess(fileID_arduino,fileID_TSMW)
-%load the .mat file
-load(fileID_arduino, 'data', 'metaData', 'timeStamp');
-
-%load the .txt file
-TSMW_table = readtable(fileID_TSMW);
+function P = postprocess(positions, timeStamp, TSMW_table)
 
 %%%%%%find the earliest entry
 TSMW_start = [char(TSMW_table{2,1}) ' ' char(TSMW_table{2,2})];
@@ -51,7 +46,7 @@ if n(end) > m(end)
     TSMW_table = TSMW_table(1:length(n),:);
 else
     m=m(m<n(end));
-    data = data(:,1:length(m));
+    positions = positions(:,1:length(m));
     timeStamp= timeStamp(1:length(m));
 end
 
