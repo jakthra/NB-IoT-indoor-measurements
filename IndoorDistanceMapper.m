@@ -66,15 +66,23 @@ plot(indoorDistances,Power,'o')
 xlabel('Indoor distance [m]')
 ylabel('RSSI [dBm]')
 
+% theoretical model
+pathloss_indoor = -0.5*indoorDistances;
+hold on
+plot(indoorDistances, pathloss_indoor-70)
+
 % Raw measurements are not super pretty. 
 % Bin the measurements and calculate the mean 
 [B,Bedge,idx] = histcounts(indoorDistances, 15);
 V = accumarray(idx(:),Power,[],@mean);
+SIGMA = accumarray(idx(:),Power,[],@std);
 figure
-plot(indoorDistances,Power,'o')
+plot(indoorDistances,Power,'o', 'MarkerSize', 3)
 hold on
-plot(Bedge(1:end-1), V,'-o','LineWidth', 2)
-xlabel('Indoor distance')
-ylabel('Power [dBm] \mu')
-legend('Raw measurements','Binned mean')
+%plot(Bedge(1:end-1), V,'-o','LineWidth', 2)
+errorbar(Bedge(1:end-1), V, SIGMA, '-o', 'LineWidth', 1.5)
+plot(indoorDistances, pathloss_indoor-69, '--', 'LineWidth', 1.5)
+xlabel('Indoor distance [m]')
+ylabel('RSSI [dBm] \mu')
+legend('Raw measurements','Binned mean/std','PL_{in} 38.901')
 grid
